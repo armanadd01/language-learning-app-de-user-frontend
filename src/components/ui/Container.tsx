@@ -2,9 +2,12 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-type Props = Omit<React.HTMLAttributes<HTMLDivElement>, 'onDrag'> & { size?: 'md' | 'lg' | 'xl' | 'full' };
+type Props = {
+  className?: string;
+  size?: 'md' | 'lg' | 'xl' | 'full';
+};
 
-export function Container({ className, size = 'lg', ...props }: Props) {
+export function Container({ className, size = 'lg' }: Props) {
   const widths = {
     md: 'max-w-3xl',
     lg: 'max-w-5xl',
@@ -22,7 +25,6 @@ export function Container({ className, size = 'lg', ...props }: Props) {
         widths[size], 
         className
       )} 
-      {...props} 
     />
   );
 }
