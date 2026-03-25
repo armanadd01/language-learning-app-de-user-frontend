@@ -8,8 +8,8 @@ export const Card: React.FC<Props> = ({ className, ...props }) => {
   return (
     <motion.div
       className={cn(
-        'rounded-2xl border border-slate-200/60 bg-card dark:border-slate-800/60 text-card-foreground shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden',
-        'before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-50/20 before:to-purple-50/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300',
+        'rounded-2xl border border-border bg-[var(--card)] text-[var(--card-foreground)] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden',
+        'before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-50/20 before:to-purple-50/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:pointer-events-none',
         className
       )}
       whileHover={{ y: -4 }}

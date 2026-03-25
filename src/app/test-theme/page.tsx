@@ -43,5 +43,6 @@ export default function TestThemePage() {
           </div>
         </div>
       </div>
-    )
+    </div>
+  )
 }

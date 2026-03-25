@@ -7,7 +7,7 @@ import { apiFetch } from '@/lib/api';
 import { getToken } from '@/lib/auth';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
+import { AppShell } from '@/components/layout/AppShell';
 
 type FindArticleItem = {
   noun: string;
@@ -140,44 +140,59 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
   }
 
   if (loading) {
-    return <Container size="lg" className="py-10 text-sm text-zinc-600">Loading…</Container>;
+    return (
+      <AppShell>
+        <div className="text-sm text-muted-foreground">Loading…</div>
+      </AppShell>
+    )
   }
 
   if (error) {
-    return <Container size="lg" className="py-10 text-sm text-red-700">{error}</Container>;
+    return (
+      <AppShell>
+        <div className="text-sm text-red-700">{error}</div>
+      </AppShell>
+    )
   }
 
   if (!activity) return null;
 
   if (!hasToken) {
     return (
-      <Container size="lg" className="py-10">
-        <h1 className="text-xl font-semibold">Login required</h1>
-        <p className="mt-2 text-sm text-zinc-600">You need to login to submit attempts and earn XP.</p>
-        <Button asChild className="mt-6">
-          <Link href="/login">Login</Link>
-        </Button>
-      </Container>
+      <AppShell>
+        <Card className="p-8 text-center">
+          <h1 className="text-xl font-bold text-foreground">Login required</h1>
+          <p className="mt-2 text-sm text-muted-foreground">You need to login to submit attempts and earn XP.</p>
+          <Button asChild className="mt-6 bg-cyan-500 hover:bg-cyan-600 text-white">
+            <Link href="/login">Login</Link>
+          </Button>
+        </Card>
+      </AppShell>
     );
   }
 
   return (
-    <Container size="lg" className="py-10">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {activity.type === 'alphabet_recognition' ? 'Alphabet Recognition' :
-           activity.type === 'case_identification' ? 'Case Identification' :
-           activity.type === 'preposition_cases' ? 'Preposition Cases' :
-           'Find the Article'}
-        </h1>
-        <Button variant="ghost" asChild>
-          <Link href="/dashboard">Dashboard</Link>
+    <AppShell>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-[11px] font-semibold text-muted-foreground">Practice Activity</div>
+          <h1 className="mt-1 text-2xl font-extrabold text-foreground">
+            {activity.type === 'alphabet_recognition'
+              ? 'Alphabet Recognition'
+              : activity.type === 'case_identification'
+                ? 'Case Identification'
+                : activity.type === 'preposition_cases'
+                  ? 'Preposition Cases'
+                  : 'Find the Article'}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">{activity.prompt}</p>
+        </div>
+        <Button variant="outline" asChild className="h-10">
+          <Link href="/activities">Back</Link>
         </Button>
       </div>
 
-      <p className="mt-2 text-sm text-zinc-600">{activity.prompt}</p>
-
-      <Card className="mt-6 p-5">
+      <Card className="mt-6 p-6">
         <div className="flex flex-col gap-5">
           {activity.type === 'alphabet_recognition' ? (
             // Alphabet Recognition Activity
@@ -187,9 +202,9 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
               const options = it.options;
 
               return (
-                <div key={idx} className="rounded-lg border border-zinc-200 p-4">
-                  <div className="text-lg font-bold text-center mb-3">{it.letter}</div>
-                  <div className="text-sm text-zinc-600 text-center mb-4">like in {it.example}</div>
+                <div key={idx} className="rounded-2xl border border-border bg-white/60 p-4 dark:bg-zinc-950/30">
+                  <div className="text-lg font-extrabold text-center mb-2 text-foreground">{it.letter}</div>
+                  <div className="text-sm text-muted-foreground text-center mb-4">like in {it.example}</div>
                   <div className="grid grid-cols-2 gap-2">
                     {options.map((opt: string) => (
                       <Button
@@ -213,8 +228,8 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
               const options = it.options;
 
               return (
-                <div key={idx} className="rounded-lg border border-zinc-200 p-4">
-                  <div className="text-sm mb-3" dangerouslySetInnerHTML={{ 
+                <div key={idx} className="rounded-2xl border border-border bg-white/60 p-4 dark:bg-zinc-950/30">
+                  <div className="text-sm mb-3 text-muted-foreground" dangerouslySetInnerHTML={{ 
                     __html: it.sentence.replace(/___([^_]+)___/g, '<span class="font-bold text-blue-600">$1</span>') 
                   }}></div>
                   <div className="grid grid-cols-2 gap-2">
@@ -240,9 +255,9 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
               const options = it.options;
 
               return (
-                <div key={idx} className="rounded-lg border border-zinc-200 p-4">
-                  <div className="text-lg font-bold text-center mb-3">{it.preposition}</div>
-                  <div className="text-sm text-zinc-600 text-center mb-4">Choose the correct case</div>
+                <div key={idx} className="rounded-2xl border border-border bg-white/60 p-4 dark:bg-zinc-950/30">
+                  <div className="text-lg font-extrabold text-center mb-2 text-foreground">{it.preposition}</div>
+                  <div className="text-sm text-muted-foreground text-center mb-4">Choose the correct case</div>
                   <div className="grid grid-cols-2 gap-2">
                     {options.map((opt: string) => (
                       <Button
@@ -266,8 +281,8 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
               const selected = selections[idx] as 'der' | 'die' | 'das';
 
               return (
-                <div key={idx} className="rounded-lg border border-zinc-200 p-4">
-                  <div className="text-sm font-semibold">{it.noun}</div>
+                <div key={idx} className="rounded-2xl border border-border bg-white/60 p-4 dark:bg-zinc-950/30">
+                  <div className="text-sm font-bold text-foreground">{it.noun}</div>
                   <div className="mt-3 flex gap-3">
                     {options.map((opt) => (
                       <Button
@@ -325,22 +340,22 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
           {!result?.lessonCompleted && (
             <>
               {activity.type === 'alphabet_recognition' && (
-                <div className="ml-auto text-sm text-zinc-600">
+                <div className="ml-auto text-sm text-muted-foreground">
                   {Object.keys(selections).length}/{(activity.payload as { items: AlphabetRecognitionItem[] }).items.length} answered
                 </div>
               )}
               {activity.type === 'case_identification' && (
-                <div className="ml-auto text-sm text-zinc-600">
+                <div className="ml-auto text-sm text-muted-foreground">
                   {Object.keys(selections).length}/{(activity.payload as { items: CaseIdentificationItem[] }).items.length} answered
                 </div>
               )}
               {activity.type === 'preposition_cases' && (
-                <div className="ml-auto text-sm text-zinc-600">
+                <div className="ml-auto text-sm text-muted-foreground">
                   {Object.keys(selections).length}/{(activity.payload as { items: PrepositionCasesItem[] }).items.length} answered
                 </div>
               )}
               {activity.type === 'find_article' && (
-                <div className="ml-auto text-sm text-zinc-600">
+                <div className="ml-auto text-sm text-muted-foreground">
                   {Object.keys(selections).length}/{(activity.payload as { items: FindArticleItem[] }).items.length} answered
                 </div>
               )}
@@ -348,6 +363,6 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
           )}
         </div>
       </Card>
-    </Container>
+    </AppShell>
   );
 }
