@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { GraduationCap, Mail, Lock, Check, Apple } from 'lucide-react';
 
 import { setToken } from '@/lib/auth';
-import { firebaseAuth } from '@/lib/firebaseClient';
+import { getFirebaseAuth } from '@/lib/firebaseClient';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -28,7 +28,8 @@ export default function LoginPage() {
     setDebug(null);
 
     try {
-      const cred = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const auth = getFirebaseAuth();
+      const cred = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await cred.user.getIdToken();
       setToken(idToken);
       router.push('/dashboard');
