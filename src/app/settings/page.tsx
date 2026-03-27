@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { apiFetch } from '@/lib/api'
-import { getToken } from '@/lib/auth'
+import { useHasToken } from '@/lib/auth'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -22,7 +22,7 @@ type MeResponse = {
 type ProfileUpdateResponse = { profile?: { displayName?: string; bio?: string; currentLevelCode?: string } }
 
 export default function SettingsPage() {
-  const hasToken = useMemo(() => Boolean(getToken()), [])
+  const hasToken = useHasToken()
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

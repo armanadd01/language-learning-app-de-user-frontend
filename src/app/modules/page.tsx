@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Layers, Lock, ChevronRight } from 'lucide-react'
 
 import { apiFetch } from '@/lib/api'
-import { getToken } from '@/lib/auth'
+import { useHasToken } from '@/lib/auth'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -33,7 +33,7 @@ type LevelsResponse = { levels: Level[] }
 type ModulesResponse = { modules: Module[] }
 
 export default function ModulesPage() {
-  const hasToken = useMemo(() => Boolean(getToken()), [])
+  const hasToken = useHasToken()
 
   const [levels, setLevels] = useState<Level[]>([])
   const [modules, setModules] = useState<Module[]>([])

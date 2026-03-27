@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { BookOpen, Gamepad2, Headphones, Search, Sparkles, SquarePen, TextCursorInput, Wand2 } from 'lucide-react'
 
 import { apiFetch } from '@/lib/api'
-import { getToken } from '@/lib/auth'
+import { useHasToken } from '@/lib/auth'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -44,7 +44,7 @@ function gameIcon(id: string) {
 }
 
 export default function GamesHubPage() {
-  const hasToken = useMemo(() => Boolean(getToken()), [])
+  const hasToken = useHasToken()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<GameCategory>('All Games')
 

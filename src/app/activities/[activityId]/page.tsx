@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState, use } from 'react';
+import { useEffect, useState } from 'react';
 
 import { apiFetch } from '@/lib/api';
-import { getToken } from '@/lib/auth';
+import { useHasToken } from '@/lib/auth';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { AppShell } from '@/components/layout/AppShell';
@@ -41,9 +41,8 @@ type Activity = {
   scoring?: { xpCorrect: number; xpIncorrect: number };
 };
 
-export default function ActivityPage({ params }: { params: Promise<{ activityId: string }> }) {
-  const resolvedParams = use(params);
-  const activityId = resolvedParams.activityId;
+export default function ActivityPage({ params }: { params: { activityId: string } }) {
+  const activityId = params.activityId;
   
   const [activity, setActivity] = useState<Activity | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +52,7 @@ export default function ActivityPage({ params }: { params: Promise<{ activityId:
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ correctCount: number; total: number; xpEarned: number; lessonCompleted?: boolean } | null>(null);
 
-  const hasToken = useMemo(() => Boolean(getToken()), []);
+  const hasToken = useHasToken();
 
   useEffect(() => {
     async function load() {

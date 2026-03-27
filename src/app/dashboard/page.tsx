@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 import { apiFetch } from '@/lib/api';
-import { clearToken, getToken } from '@/lib/auth';
+import { clearToken, useHasToken } from '@/lib/auth';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { AppShell } from '@/components/layout/AppShell';
@@ -45,7 +45,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
 
-  const hasToken = useMemo(() => Boolean(getToken()), []);
+  const hasToken = useHasToken();
 
   useEffect(() => {
     async function load() {

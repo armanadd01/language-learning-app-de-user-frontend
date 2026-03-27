@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { ChevronDown, ChevronRight, Search } from 'lucide-react'
 
 import { apiFetch } from '@/lib/api'
-import { getToken } from '@/lib/auth'
+import { useHasToken } from '@/lib/auth'
 import { AppShell } from '@/components/layout/AppShell'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -167,7 +167,7 @@ function GrammarSection({ title, data, defaultOpen }: { title: string; data: Jso
 }
 
 export default function GrammarPage() {
-  const hasToken = useMemo(() => Boolean(getToken()), [])
+  const hasToken = useHasToken()
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

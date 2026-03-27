@@ -4,11 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { GraduationCap, Mail, Lock, Check, Apple, User } from 'lucide-react';
 
-import { API_BASE_URL } from '@/lib/config';
 import { setToken } from '@/lib/auth';
+import { firebaseAuth } from '@/lib/firebaseClient';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -25,16 +27,12 @@ export default function SignupPage() {
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayName, email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? 'Signup failed');
-
-      setToken(data.token);
+      const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      if (displayName.trim()) {
+        await updateProfile(cred.user, { displayName: displayName.trim() });
+      }
+      const idToken = await cred.user.getIdToken();
+      setToken(idToken);
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed');

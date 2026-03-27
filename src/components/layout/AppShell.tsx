@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { clearToken, getToken } from '@/lib/auth'
+import { clearToken, useHasToken } from '@/lib/auth'
 import { apiFetch } from '@/lib/api'
 import { LevelUpModal, type LevelUpPayload } from '@/components/gamification/LevelUpModal'
 import { LEVEL_UP_EVENT } from '@/lib/gamificationEvents'
@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
 
-  const hasToken = React.useMemo(() => Boolean(getToken()), [])
+  const hasToken = useHasToken()
   const [stats, setStats] = React.useState<{ xpTotal: number; streakDays: number } | null>(null)
   const [xpToday, setXpToday] = React.useState<number | null>(null)
 

@@ -4,11 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { GraduationCap, Mail, Lock, Check, Apple } from 'lucide-react';
 
-import { API_BASE_URL } from '@/lib/config';
 import { setToken } from '@/lib/auth';
+import { firebaseAuth } from '@/lib/firebaseClient';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,24 +18,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [debug, setDebug] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setDebug(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? 'Login failed');
-
-      setToken(data.token);
+      const cred = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const idToken = await cred.user.getIdToken();
+      setToken(idToken);
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -171,9 +168,19 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <Button disabled={loading} type="submit" className="w-full h-11 rounded-xl shadow-sm">
+              {debug && (
+                <pre className="rounded-xl border border-border bg-[var(--card)] p-4 text-xs text-muted-foreground whitespace-pre-wrap">
+                  {debug}
+                </pre>
+              )}
+
+              <button
+                disabled={loading}
+                type="submit"
+                className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-[var(--primary)] px-4 text-sm font-medium text-[var(--primary-foreground)] shadow-sm transition-all duration-300 disabled:pointer-events-none disabled:opacity-60"
+              >
                 {loading ? 'Signing in…' : 'Sign In'}
-              </Button>
+              </button>
 
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-border" />

@@ -1,16 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import { AppShell } from '@/components/layout/AppShell'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { getToken } from '@/lib/auth'
+import { useHasToken } from '@/lib/auth'
 import { loadSettings, updateSettings, type PreferencesSettings } from '@/lib/settingsStore'
 
 export default function PreferencesPage() {
-  const hasToken = useMemo(() => Boolean(getToken()), [])
+  const hasToken = useHasToken()
   const [saving, setSaving] = useState(false)
   const [prefs, setPrefs] = useState<PreferencesSettings>(() => loadSettings().preferences)
 

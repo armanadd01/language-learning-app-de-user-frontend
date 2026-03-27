@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState, use } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { BookOpen, CircleCheck, Lock } from 'lucide-react'
 
 import { apiFetch } from '@/lib/api'
-import { getToken } from '@/lib/auth'
+import { useHasToken } from '@/lib/auth'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -31,11 +31,10 @@ type LessonsResponse = { lessons: Lesson[] }
 
 type ModuleResponse = { module?: Module }
 
-export default function ModuleDetailPage({ params }: { params: Promise<{ moduleId: string }> }) {
-  const resolvedParams = use(params)
-  const moduleId = resolvedParams.moduleId
+export default function ModuleDetailPage({ params }: { params: { moduleId: string } }) {
+  const moduleId = params.moduleId
 
-  const hasToken = useMemo(() => Boolean(getToken()), [])
+  const hasToken = useHasToken()
 
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [moduleMeta, setModuleMeta] = useState<Module | null>(null)
