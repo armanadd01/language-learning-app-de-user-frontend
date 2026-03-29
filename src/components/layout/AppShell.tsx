@@ -436,11 +436,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {children}
           </main>
 
-          {/* <footer className="border-t border-border py-6">
-            <div className="mx-auto max-w-7xl px-4 text-center text-xs text-muted-foreground sm:px-6">
-              © {new Date().getFullYear()} DeutschPath. All rights reserved.
-            </div>
-          </footer> */}
+         
           <Footer />
         </div>
       </div>
