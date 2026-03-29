@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -20,6 +20,24 @@ export default function SignupPage() {
   const [agree, setAgree] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  async function onGoogle() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const auth = getFirebaseAuth();
+      const provider = new GoogleAuthProvider();
+      const cred = await signInWithPopup(auth, provider);
+      const idToken = await cred.user.getIdToken();
+      setToken(idToken);
+      router.push('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google sign-in failed');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -199,7 +217,7 @@ export default function SignupPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button type="button" variant="outline" className="h-11">
+                <Button type="button" variant="outline" className="h-11" disabled={loading || !agree} onClick={onGoogle}>
                   Google
                 </Button>
                 <Button type="button" variant="outline" className="h-11">
