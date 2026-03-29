@@ -1,9 +1,12 @@
 'use client';
 
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import { getAuth, onIdTokenChanged, type Auth } from 'firebase/auth';
+
+import { clearToken, setToken } from '@/lib/auth';
 
 let cachedAuth: Auth | null = null;
+let tokenSyncStarted = false;
 
 export function getFirebaseAuth(): Auth {
   // Prevent Next.js prerender/build from evaluating Firebase (and throwing) on the server.
@@ -31,4 +34,24 @@ export function getFirebaseAuth(): Auth {
   const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   cachedAuth = getAuth(app);
   return cachedAuth;
+}
+
+export function startFirebaseTokenSync() {
+  if (typeof window === 'undefined') return;
+  if (tokenSyncStarted) return;
+  tokenSyncStarted = true;
+
+  const auth = getFirebaseAuth();
+  onIdTokenChanged(auth, async (user) => {
+    try {
+      if (!user) {
+        clearToken();
+        return;
+      }
+      const idToken = await user.getIdToken();
+      setToken(idToken);
+    } catch {
+      clearToken();
+    }
+  });
 }

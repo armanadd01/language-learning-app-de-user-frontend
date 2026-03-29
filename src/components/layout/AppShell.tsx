@@ -19,12 +19,10 @@ import {
 import { cn } from "@/lib/utils";
 import { clearToken, useHasToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
-import {
-  LevelUpModal,
-  type LevelUpPayload,
-} from "@/components/gamification/LevelUpModal";
+import { LevelUpModal, type LevelUpPayload } from "@/components/gamification/LevelUpModal";
 import { LEVEL_UP_EVENT } from "@/lib/gamificationEvents";
 import { ThemeControls } from "@/components/ui/ThemeControls";
+import { startFirebaseTokenSync } from "@/lib/firebaseClient";
 
 type NavItem = {
   label: string;
@@ -68,8 +66,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [xpToday, setXpToday] = React.useState<number | null>(null);
 
   const [levelUpOpen, setLevelUpOpen] = React.useState(false);
-  const [levelUpPayload, setLevelUpPayload] =
-    React.useState<LevelUpPayload | null>(null);
+  const [levelUpPayload, setLevelUpPayload] = React.useState<LevelUpPayload | null>(null);
+
+  React.useEffect(() => {
+    startFirebaseTokenSync();
+  }, []);
 
   React.useEffect(() => {
     function onLevelUp(e: Event) {

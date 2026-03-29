@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './config';
-import { getToken } from './auth';
+import { clearToken, getToken } from './auth';
 
 export type ApiError = { error: string };
 
@@ -29,6 +29,9 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   const data = await parseJsonSafely(res);
 
   if (!res.ok) {
+    if (res.status === 401) {
+      clearToken();
+    }
     const message =
       typeof data === 'object' && data && 'error' in data ? String((data as ApiError).error) : `HTTP ${res.status}`;
     throw new Error(message);
