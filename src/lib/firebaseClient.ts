@@ -48,7 +48,7 @@ export function startFirebaseTokenSync() {
         clearToken();
         return;
       }
-      const idToken = await user.getIdToken();
+      const idToken = await user.getIdToken(true);
       setToken(idToken);
     } catch {
       clearToken();

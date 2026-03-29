@@ -29,7 +29,7 @@ export default function SignupPage() {
       const auth = getFirebaseAuth();
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
-      const idToken = await cred.user.getIdToken();
+      const idToken = await cred.user.getIdToken(true);
       setToken(idToken);
       router.push('/dashboard');
     } catch (err) {
@@ -50,7 +50,7 @@ export default function SignupPage() {
       if (displayName.trim()) {
         await updateProfile(cred.user, { displayName: displayName.trim() });
       }
-      const idToken = await cred.user.getIdToken();
+      const idToken = await cred.user.getIdToken(true);
       setToken(idToken);
       router.push('/dashboard');
     } catch (err) {

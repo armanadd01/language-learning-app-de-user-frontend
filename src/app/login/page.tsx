@@ -30,7 +30,7 @@ export default function LoginPage() {
       const auth = getFirebaseAuth();
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
-      const idToken = await cred.user.getIdToken();
+      const idToken = await cred.user.getIdToken(true);
       setToken(idToken);
       router.push('/dashboard');
     } catch (err) {
@@ -49,7 +49,7 @@ export default function LoginPage() {
     try {
       const auth = getFirebaseAuth();
       const cred = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await cred.user.getIdToken();
+      const idToken = await cred.user.getIdToken(true);
       setToken(idToken);
       router.push('/dashboard');
     } catch (err) {
