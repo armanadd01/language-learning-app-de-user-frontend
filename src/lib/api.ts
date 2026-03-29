@@ -15,6 +15,7 @@ async function parseJsonSafely(res: Response) {
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = typeof window !== 'undefined' ? getToken() : null;
+  const sentAuthHeader = Boolean(token);
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
@@ -29,7 +30,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   const data = await parseJsonSafely(res);
 
   if (!res.ok) {
-    if (res.status === 401) {
+    if (res.status === 401 && sentAuthHeader) {
       clearToken();
     }
     const message =
