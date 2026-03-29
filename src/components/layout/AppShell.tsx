@@ -23,6 +23,7 @@ import { LevelUpModal, type LevelUpPayload } from "@/components/gamification/Lev
 import { LEVEL_UP_EVENT } from "@/lib/gamificationEvents";
 import { ThemeControls } from "@/components/ui/ThemeControls";
 import { startFirebaseTokenSync } from "@/lib/firebaseClient";
+import { Footer } from "./Footer";
 
 type NavItem = {
   label: string;
@@ -440,6 +441,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               © {new Date().getFullYear()} DeutschPath. All rights reserved.
             </div>
           </footer>
+          <Footer />
         </div>
       </div>
     </div>

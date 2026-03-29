@@ -186,11 +186,11 @@ export default function DashboardPage() {
         </div>
       ) : null}
 
-      {hasToken && authDebugText ? (
+      {/* {hasToken && authDebugText ? (
         <pre className="mt-4 rounded-xl border border-border bg-[var(--card)] p-4 text-xs text-muted-foreground whitespace-pre-wrap">
           {authDebugText}
         </pre>
-      ) : null}
+      ) : null} */}
 
       {!hasToken && (
         <Card className="mt-10 p-8 text-center">
