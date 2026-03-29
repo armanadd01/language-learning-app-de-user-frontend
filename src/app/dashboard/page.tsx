@@ -23,6 +23,14 @@ type Lesson = { _id: string; title: string; order: number; status?: 'locked' | '
 
 type LevelsResponse = { levels: Level[] };
 
+type AuthDebugResponse = {
+  hasAuthorizationHeader: boolean;
+  authorizationHeaderStartsWithBearer: boolean;
+  hasFirebaseServiceAccountConfigured: boolean;
+  firebaseServiceAccountProjectId: string | null;
+  nodeEnv: string | null;
+};
+
 type SummaryResponse = {
   stats: { xpTotal: number; streakDays: number; lastActivityAt?: string };
   progress: null | {
@@ -44,6 +52,7 @@ export default function DashboardPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
+  const [authDebug, setAuthDebug] = useState<AuthDebugResponse | null>(null);
 
   const hasToken = useHasToken();
 
@@ -57,6 +66,13 @@ export default function DashboardPage() {
       try {
         setLoading(true);
         setError(null);
+
+        try {
+          const debug = await apiFetch<AuthDebugResponse>(`/auth/debug`);
+          setAuthDebug(debug);
+        } catch {
+          setAuthDebug(null);
+        }
 
         const summaryData = await apiFetch<SummaryResponse>(`/me/summary?courseSlug=german-goethe`);
         setSummary(summaryData);
@@ -115,6 +131,15 @@ export default function DashboardPage() {
     return Array.from(dayMap.entries()).map(([day, xp]) => ({ day, xp, height: Math.round((xp / max) * 80) }))
   }, [summary?.recent])
 
+  const authDebugText = useMemo(() => {
+    if (!authDebug) return null;
+    try {
+      return JSON.stringify(authDebug, null, 2);
+    } catch {
+      return String(authDebug);
+    }
+  }, [authDebug]);
+
   // Recent badges with mock timestamps (since we don’t store earnedAt yet)
   const recentBadges = useMemo(() => {
     if (!summary?.badges) return []
@@ -159,6 +184,12 @@ export default function DashboardPage() {
         <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {error}
         </div>
+      ) : null}
+
+      {hasToken && authDebugText ? (
+        <pre className="mt-4 rounded-xl border border-border bg-[var(--card)] p-4 text-xs text-muted-foreground whitespace-pre-wrap">
+          {authDebugText}
+        </pre>
       ) : null}
 
       {!hasToken && (

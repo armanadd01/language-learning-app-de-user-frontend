@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './config';
-import { clearToken, getToken } from './auth';
+import { clearToken, getToken, setToken } from './auth';
 
 export type ApiError = { error: string };
 
@@ -14,18 +14,39 @@ async function parseJsonSafely(res: Response) {
 }
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = typeof window !== 'undefined' ? getToken() : null;
+  let token = typeof window !== 'undefined' ? getToken() : null;
   const sentAuthHeader = Boolean(token);
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(init?.headers ?? {}),
-    },
-    cache: 'no-store',
-  });
+  async function doFetch(currentToken: string | null) {
+    return fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
+        ...(init?.headers ?? {}),
+      },
+      cache: 'no-store',
+    });
+  }
+
+  let res = await doFetch(token);
+
+  // If token is present but backend says 401, try to force-refresh Firebase token and retry once.
+  if (res.status === 401 && sentAuthHeader && typeof window !== 'undefined') {
+    try {
+      const { getFirebaseAuth } = await import('./firebaseClient');
+      const auth = getFirebaseAuth();
+      const user = auth.currentUser;
+      if (user) {
+        const fresh = await user.getIdToken(true);
+        setToken(fresh);
+        token = fresh;
+        res = await doFetch(token);
+      }
+    } catch {
+      // Ignore refresh issues and fall back to normal error handling.
+    }
+  }
 
   const data = await parseJsonSafely(res);
 
