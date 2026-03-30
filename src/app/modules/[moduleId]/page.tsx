@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useEffect, useState, useMemo } from 'react'
 import { BookOpen, CircleCheck, Lock } from 'lucide-react'
 
@@ -32,7 +33,12 @@ type LessonsResponse = { lessons: Lesson[] }
 type ModuleResponse = { module?: Module }
 
 export default function ModuleDetailPage({ params }: { params: { moduleId: string } }) {
-  const moduleId = params.moduleId
+  const routeParams = useParams<{ moduleId?: string | string[] }>()
+  const moduleIdFromParams = params?.moduleId
+  const moduleIdFromRoute = routeParams?.moduleId
+  const moduleId = Array.isArray(moduleIdFromRoute)
+    ? moduleIdFromRoute[0]
+    : (moduleIdFromRoute ?? moduleIdFromParams)
 
   const hasToken = useHasToken()
 
