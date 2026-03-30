@@ -14,12 +14,202 @@ type JsonPrimitive = string | number | boolean | null
 type JsonValue = JsonPrimitive | JsonObject | JsonValue[]
 type JsonObject = { [key: string]: JsonValue }
 
+function GrammarItemCard({ item }: { item: GrammarLibraryItem }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Card className="p-5">
+      <button type="button" className="flex w-full items-center justify-between gap-4" onClick={() => setOpen((o) => !o)}>
+        <div className="min-w-0">
+          <div className="text-sm font-bold text-foreground truncate">{item.title}</div>
+          <div className="mt-1 text-xs text-muted-foreground">Click to {open ? 'collapse' : 'expand'}</div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{item.level}</div>
+          {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+        </div>
+      </button>
+
+      {open ? (
+        <div className="mt-4">
+          <div className="text-sm text-foreground whitespace-pre-wrap">{item.explanation}</div>
+
+          {item.tables?.length ? (
+            <div className="mt-4 space-y-3">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Tables</div>
+              {item.tables.map((t) => (
+                <div key={t.title} className="rounded-xl border border-border bg-white/60 p-3 dark:bg-zinc-950/30">
+                  <div className="text-xs font-bold text-foreground">{t.title}</div>
+                  <div className="mt-2 overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr>
+                          {t.headers.map((h) => (
+                            <th key={h} className="border-b border-border px-2 py-1 font-semibold text-muted-foreground whitespace-nowrap">
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {t.rows.map((r, idx) => (
+                          <tr key={idx}>
+                            {r.map((cell, cIdx) => (
+                              <td key={cIdx} className="border-b border-border/60 px-2 py-1 text-foreground whitespace-nowrap">
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {item.examples?.length ? (
+            <div className="mt-4 space-y-2">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Examples</div>
+              {item.examples.map((ex, idx) => (
+                <div key={idx} className="rounded-xl border border-border bg-white/60 p-3 text-sm text-foreground dark:bg-zinc-950/30">
+                  <div className="font-semibold">{ex.de}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">{ex.en}</div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {item.notes?.length ? (
+            <div className="mt-4">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Notes</div>
+              <div className="mt-2 space-y-2">
+                {item.notes.map((n, idx) => (
+                  <div key={idx} className="rounded-xl border border-border bg-white/60 p-3 text-sm text-foreground dark:bg-zinc-950/30">
+                    {n}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {item.common_errors?.length ? (
+            <div className="mt-4">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Common errors</div>
+              <div className="mt-2 space-y-2">
+                {item.common_errors.map((e, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-200"
+                  >
+                    {e}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {item.keywords?.length ? (
+            <div className="mt-4">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Keywords</div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {item.keywords.map((k) => (
+                  <span
+                    key={k}
+                    className="rounded-full border border-border bg-white/60 px-2 py-1 text-[11px] text-muted-foreground dark:bg-zinc-950/30"
+                  >
+                    {k}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </Card>
+  )
+}
+
+function GrammarLevelBlock({ title, sections, defaultOpen }: { title: string; sections: GrammarLibrarySection[]; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(Boolean(defaultOpen))
+
+  return (
+    <Card className="p-5">
+      <button type="button" className="flex w-full items-center justify-between gap-4" onClick={() => setOpen((o) => !o)}>
+        <div>
+          <div className="text-xs font-semibold text-muted-foreground">Level</div>
+          <div className="mt-1 text-lg font-extrabold text-foreground">{title}</div>
+          <div className="mt-1 text-xs text-muted-foreground">Sections: {sections.length}</div>
+        </div>
+        {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+      </button>
+
+      {open ? (
+        <div className="mt-4 grid gap-4">
+          {sections.map((sec) => (
+            <GrammarSectionBlock key={sec.title} section={sec} />
+          ))}
+        </div>
+      ) : null}
+    </Card>
+  )
+}
+
+function GrammarSectionBlock({ section }: { section: GrammarLibrarySection }) {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <Card className="p-5">
+      <button type="button" className="flex w-full items-center justify-between gap-4" onClick={() => setOpen((o) => !o)}>
+        <div className="text-sm font-bold text-foreground">{section.title}</div>
+        {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+      </button>
+      {open ? (
+        <div className="mt-4 grid gap-4">
+          {section.items.map((item) => (
+            <GrammarItemCard key={item.id} item={item} />
+          ))}
+        </div>
+      ) : null}
+    </Card>
+  )
+}
+
 type GrammarResponse = {
   grammar: {
     slug: string
     language: string
     content: JsonValue
     updatedAt?: string
+  }
+}
+
+type GrammarLibraryItem = {
+  id: string
+  title: string
+  level: 'A0' | 'A1' | 'A2' | 'B1'
+  explanation: string
+  examples: Array<{ de: string; en: string }>
+  notes?: string[]
+  common_errors?: string[]
+  keywords?: string[]
+  tables?: Array<{ title: string; headers: string[]; rows: string[][] }>
+}
+
+type GrammarLibrarySection = {
+  title: string
+  items: GrammarLibraryItem[]
+}
+
+type GrammarLibraryContent = {
+  language?: string
+  version?: string
+  sections?: {
+    a0?: GrammarLibrarySection[]
+    a1?: GrammarLibrarySection[]
+    a2?: GrammarLibrarySection[]
+    b1?: GrammarLibrarySection[]
   }
 }
 
@@ -76,6 +266,26 @@ function buildNodes(value: JsonValue, basePath: string, depth: number): Node[] {
     }
   }
   return nodes
+}
+
+function asLibraryContent(v: JsonValue): GrammarLibraryContent | null {
+  if (!isPlainObject(v)) return null
+  const sections = (v as JsonObject)['sections']
+  if (!isPlainObject(sections)) return null
+  return v as unknown as GrammarLibraryContent
+}
+
+function libraryToSearchText(item: GrammarLibraryItem) {
+  const parts = [
+    item.level,
+    item.title,
+    item.explanation,
+    ...(item.keywords ?? []),
+    ...(item.notes ?? []),
+    ...(item.common_errors ?? []),
+    ...item.examples.flatMap((e) => [e.de, e.en]),
+  ]
+  return parts.join(' ').toLowerCase()
 }
 
 function KeyValue({ k, v }: { k: string; v: JsonValue }) {
@@ -175,6 +385,10 @@ export default function GrammarPage() {
 
   const [query, setQuery] = useState('')
 
+  const library = useMemo(() => {
+    return asLibraryContent(grammar?.content ?? null)
+  }, [grammar])
+
   useEffect(() => {
     async function load() {
       if (!hasToken) {
@@ -198,18 +412,59 @@ export default function GrammarPage() {
   }, [hasToken])
 
   const topSections = useMemo(() => {
-    const c = grammar?.content
-    if (!c || !isPlainObject(c)) return []
-    return Object.keys(c)
-      .filter((k) => isPlainObject(c[k]))
-      .map((k) => ({ key: k, title: labelFromKey(k), data: c[k] }))
-  }, [grammar])
+    if (!library?.sections) {
+      const c = grammar?.content
+      if (!c || !isPlainObject(c)) return []
+      return Object.keys(c)
+        .filter((k) => isPlainObject(c[k]))
+        .map((k) => ({ key: k, title: labelFromKey(k), data: c[k] }))
+    }
+
+    const out: Array<{ key: string; title: string; data: JsonValue }> = []
+    for (const levelKey of ['a0', 'a1', 'a2', 'b1'] as const) {
+      const sections = library.sections[levelKey]
+      if (!Array.isArray(sections) || !sections.length) continue
+      out.push({
+        key: levelKey,
+        title: levelKey.toUpperCase(),
+        data: sections as unknown as JsonValue,
+      })
+    }
+    return out
+  }, [grammar, library])
 
   const allNodes = useMemo(() => {
+    if (library?.sections) return []
     const c = grammar?.content
     if (!c) return []
     return buildNodes(c, '', 0)
-  }, [grammar])
+  }, [grammar, library])
+
+  const filteredLibrary = useMemo(() => {
+    if (!library?.sections) return null
+    const q = query.trim().toLowerCase()
+
+    const levels: Array<{ key: 'a0' | 'a1' | 'a2' | 'b1'; title: string; sections: GrammarLibrarySection[] }> = []
+    for (const levelKey of ['a0', 'a1', 'a2', 'b1'] as const) {
+      const sections = library.sections[levelKey]
+      if (!Array.isArray(sections) || !sections.length) continue
+      levels.push({ key: levelKey, title: levelKey.toUpperCase(), sections: sections as unknown as GrammarLibrarySection[] })
+    }
+
+    if (!q) return levels
+
+    return levels
+      .map((lvl) => {
+        const filteredSections = lvl.sections
+          .map((sec) => {
+            const items = (sec.items ?? []).filter((it) => libraryToSearchText(it).includes(q))
+            return { ...sec, items }
+          })
+          .filter((sec) => sec.items.length > 0)
+        return { ...lvl, sections: filteredSections }
+      })
+      .filter((lvl) => lvl.sections.length > 0)
+  }, [library, query])
 
   const filteredSections = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -276,17 +531,34 @@ export default function GrammarPage() {
       ) : null}
 
       {hasToken && !loading && !error && grammar ? (
-        <div className="mt-8 grid gap-4">
-          {filteredSections.map((s, idx) => (
-            <GrammarSection key={s.key} title={s.title} data={s.data} defaultOpen={idx === 0 && !query.trim()} />
-          ))}
+        <div className="mt-8">
+          {filteredLibrary ? (
+            <div className="grid gap-4">
+              {filteredLibrary.map((lvl, idx) => (
+                <GrammarLevelBlock key={lvl.key} title={lvl.title} sections={lvl.sections} defaultOpen={idx === 0 && !query.trim()} />
+              ))}
 
-          {!filteredSections.length ? (
-            <Card className="p-6">
-              <div className="text-sm font-bold text-foreground">No matches</div>
-              <div className="mt-1 text-xs text-muted-foreground">Try a different search term.</div>
-            </Card>
-          ) : null}
+              {!filteredLibrary.length ? (
+                <Card className="p-6">
+                  <div className="text-sm font-bold text-foreground">No matches</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Try a different search term.</div>
+                </Card>
+              ) : null}
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {filteredSections.map((s, idx) => (
+                <GrammarSection key={s.key} title={s.title} data={s.data} defaultOpen={idx === 0 && !query.trim()} />
+              ))}
+
+              {!filteredSections.length ? (
+                <Card className="p-6">
+                  <div className="text-sm font-bold text-foreground">No matches</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Try a different search term.</div>
+                </Card>
+              ) : null}
+            </div>
+          )}
         </div>
       ) : null}
     </AppShell>
