@@ -8,7 +8,7 @@ export const Card: React.FC<Props> = ({ className, ...props }) => {
   return (
     <motion.div
       className={cn(
-        'rounded-2xl border border-border bg-[var(--card)] text-[var(--card-foreground)] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden',
+        'rounded-2xl border border-border bg-[var(--card)] dark:bg-[var(--background)] text-[var(--card-foreground)] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden hover:bg-[var(--accent)]/02 dark:hover:bg-[var(--accent)]/02',
         'before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-50/20 before:to-purple-50/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:pointer-events-none',
         className
       )}
